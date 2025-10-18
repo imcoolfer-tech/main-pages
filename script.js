@@ -107,3 +107,33 @@ searchInput.addEventListener("input", () => {
 // Initial render
 renderList();
 renderDetails();
+
+// === Proteksi Halaman ===
+const LOGIN_PAGE_URL = "https://imcoolfer-tech.github.io/proyek/?#"; // Ganti sesuai URL login page kamu
+
+if (localStorage.getItem("loggedIn") !== "true") {
+  // Jika belum login, redirect ke halaman login
+  window.location.href = LOGIN_PAGE_URL;
+}
+
+// === Tambahan: Logout ===
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  const usernameDisplay = document.getElementById("usernameDisplay");
+
+  // Tampilkan username (kalau mau)
+  const username = localStorage.getItem("username");
+  if (usernameDisplay && username) {
+    usernameDisplay.textContent = `Welcome, ${username}!`;
+  }
+
+  // Tombol logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("username");
+      window.location.href = LOGIN_PAGE_URL;
+    });
+  }
+});
+
