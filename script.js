@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.addEventListener("click", () => {
       localStorage.removeItem("loggedIn");
       localStorage.removeItem("username");
-      window.location.href = LOGIN_PAGE_URL;
+      window.location.href = https://imcoolfer-tech.github.io/main-pages/;
     });
   }
 });
