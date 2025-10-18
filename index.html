@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>To Do Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <aside class="sidebar">
       <h2>To Do</h2>
       <button class="new-task">+ New Task</button>
+      <input type="text" id="searchInput" placeholder="Search tasks..." />
       <ul class="task-list"></ul>
     </aside>
 
     <main class="main">
       <header>
-        <h3 id="taskTitleHeader">Select a task</h3>
+        <h3 id="taskTitleHeader">All Tasks</h3>
       </header>
-      <div id="taskDetails" class="task-details">
-        <p>Select a task from the list to view details here.</p>
-      </div>
+      <div id="taskDetails" class="task-details"></div>
     </main>
   </div>
 
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
       <h3>New Task</h3>
       <input type="text" id="taskInput" placeholder="Enter task title..." />
+      <textarea id="taskDescInput" placeholder="Enter task description..."></textarea>
       <div class="modal-buttons">
         <button id="saveTask">Save</button>
         <button id="cancelTask">Cancel</button>
