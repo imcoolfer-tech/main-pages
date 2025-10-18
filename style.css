@@ -1,20 +1,251 @@
-/* ...existing code... */
-:root{
-  --bg:#93060;
-  --card:#0501BE;
-  --accent:#2563eb;
-  --muted:#6b7280;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  background:var(--bg);color:#111;display:flex;min-height:100vh;align-items:center;justify-content:center;
+
+body {
+  background-color: #0d0d0d;
+  color: #f0f0f0;
+  display: flex;
+  height: 100vh;
 }
-.app{width:min(640px,92%);padding:2rem;background:var(--card);border-radius:10px;box-shadow:0 6px 20px rgba(16,24,40,0.08)}
-.todo-form{display:flex;gap:0.5rem;margin-bottom:1rem}
-.todo-form input{flex:1;padding:0.6rem;border:1px solid #e5e7eb;border-radius:6px}
-.todo-form button{padding:0.6rem 0.9rem;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer}
-.todo-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.5rem}
-.todo-item{display:flex;align-items:center;gap:0.75rem;padding:0.6rem;border-radius:8px;border:1px solid #f1f5f9}
-.todo-item.completed{opacity:0.6;text-decoration:line-through}
-.todo-item button{margin-left:auto;background:transparent;border:none;color:var(--muted);cursor:pointer}
+
+/* Sidebar */
+.sidebar {
+  width: 80px;
+  background-color: #121212;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.logo {
+  color: #f6b756;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.menu a {
+  display: block;
+  color: #888;
+  font-size: 22px;
+  text-decoration: none;
+  margin: 15px 0;
+  transition: 0.2s;
+}
+
+.menu a:hover {
+  color: #f6b756;
+}
+
+/* Main layout */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #0d0d0d;
+  padding: 20px 30px;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+header h2 {
+  color: #f6b756;
+  font-weight: 600;
+}
+
+.search-bar input {
+  background: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  color: #fff;
+  width: 250px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.notif {
+  position: relative;
+  font-size: 20px;
+}
+
+.notif span {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #f6b756;
+  color: #000;
+  border-radius: 50%;
+  font-size: 10px;
+  padding: 2px 5px;
+}
+
+.avatar {
+  border-radius: 50%;
+}
+
+/* Content layout */
+.content {
+  display: flex;
+  flex: 1;
+  gap: 30px;
+}
+
+/* Sidebar kanan */
+aside {
+  width: 230px;
+  background: #121212;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.new-task {
+  width: 100%;
+  background: #f6b756;
+  border: none;
+  color: #000;
+  font-weight: 600;
+  padding: 10px 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.menu-list {
+  list-style: none;
+  margin: 25px 0;
+}
+
+.menu-list li {
+  margin: 12px 0;
+  color: #ccc;
+}
+
+h4 {
+  margin-top: 20px;
+  color: #f6b756;
+}
+
+.labels {
+  list-style: none;
+  margin-top: 10px;
+}
+
+.labels li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.tag {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.tag.team { background: #a66cff; }
+.tag.low { background: #56f6a1; }
+.tag.medium { background: #f6d756; }
+.tag.high { background: #f66666; }
+
+/* Tasks */
+.task-section {
+  flex: 1;
+}
+
+.task-section h3 {
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.task-card {
+  background: #1a1a1a;
+  border-radius: 14px;
+  padding: 20px;
+  transition: 0.3s;
+}
+
+.task-card.active {
+  background: #f6b756;
+  color: #000;
+}
+
+.task-card .date {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 10px;
+}
+
+.task-card p {
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tags span {
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.tags .important {
+  background: #f6b756;
+  color: #000;
+}
+
+.active .tags .important.dark {
+  background: #000;
+  color: #f6b756;
+}
+
+.active .tags .team.dark {
+  background: #000;
+  color: #fff;
+}
+
+.members img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #000;
+  margin-right: -8px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .content {
+    flex-direction: column;
+  }
+
+  aside {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
