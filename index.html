@@ -1,118 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To Do Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="sidebar">
-    <div class="logo">●</div>
-    <div class="menu">
-      <a href="#">🏠</a>
-      <a href="#">📁</a>
-      <a href="#">📅</a>
-      <a href="#">💬</a>
-      <a href="#">⚙️</a>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>To Do</h2>
+      <button class="new-task">+ New Task</button>
+      <ul class="task-list"></ul>
+    </aside>
+
+    <main class="main">
+      <header>
+        <h3 id="taskTitleHeader">Select a task</h3>
+      </header>
+      <div id="taskDetails" class="task-details">
+        <p>Select a task from the list to view details here.</p>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3>New Task</h3>
+      <input type="text" id="taskInput" placeholder="Enter task title..." />
+      <div class="modal-buttons">
+        <button id="saveTask">Save</button>
+        <button id="cancelTask">Cancel</button>
+      </div>
     </div>
   </div>
 
-  <div class="main">
-    <header>
-      <h2>To Do</h2>
-      <div class="search-bar">
-        <input type="text" placeholder="Search here..." />
-      </div>
-      <div class="user">
-        <div class="notif">💬<span>84</span></div>
-        <div class="notif">🔔<span>2</span></div>
-        <img src="https://via.placeholder.com/40" alt="User" class="avatar" />
-      </div>
-    </header>
-
-    <section class="content">
-      <aside>
-        <button class="new-task">+ New Task</button>
-
-        <ul class="menu-list">
-          <li>📌 Important</li>
-          <li>✅ Completed</li>
-          <li>🗑️ Removed</li>
-          <li>⏰ Due Soon</li>
-        </ul>
-
-        <h4>Labels</h4>
-        <ul class="labels">
-          <li><span class="tag team"></span> Team</li>
-          <li><span class="tag low"></span> Low</li>
-          <li><span class="tag medium"></span> Medium</li>
-          <li><span class="tag high"></span> High</li>
-        </ul>
-      </aside>
-
-      <main class="task-section">
-        <h3>Important Task</h3>
-        <div class="task-grid">
-          <div class="task-card">
-            <div class="date">January 24th, 2021 · 04:25 PM</div>
-            <p>Fix login & register form design</p>
-            <div class="tags">
-              <span class="team">Team</span>
-              <span class="important">Important</span>
-            </div>
-            <div class="members">
-              <img src="https://i.pravatar.cc/40?img=1" />
-              <img src="https://i.pravatar.cc/40?img=2" />
-              <img src="https://i.pravatar.cc/40?img=3" />
-            </div>
-          </div>
-
-          <div class="task-card">
-            <div class="date">January 24th, 2021 · 04:25 PM</div>
-            <p>Fix login & register form design</p>
-            <div class="tags">
-              <span class="team">Team</span>
-              <span class="important">Important</span>
-            </div>
-            <div class="members">
-              <img src="https://i.pravatar.cc/40?img=4" />
-              <img src="https://i.pravatar.cc/40?img=5" />
-              <img src="https://i.pravatar.cc/40?img=6" />
-            </div>
-          </div>
-
-          <div class="task-card active">
-            <div class="date">January 24th, 2021 · 04:25 PM</div>
-            <p>Fix login & register form design</p>
-            <div class="tags">
-              <span class="team dark">Team</span>
-              <span class="important dark">Important</span>
-            </div>
-            <div class="members">
-              <img src="https://i.pravatar.cc/40?img=7" />
-              <img src="https://i.pravatar.cc/40?img=8" />
-              <img src="https://i.pravatar.cc/40?img=9" />
-            </div>
-          </div>
-
-          <div class="task-card">
-            <div class="date">January 24th, 2021 · 04:25 PM</div>
-            <p>Fix login & register form design</p>
-            <div class="tags">
-              <span class="team">Team</span>
-              <span class="important">Important</span>
-            </div>
-            <div class="members">
-              <img src="https://i.pravatar.cc/40?img=10" />
-              <img src="https://i.pravatar.cc/40?img=11" />
-              <img src="https://i.pravatar.cc/40?img=12" />
-            </div>
-          </div>
-        </div>
-      </main>
-    </section>
-  </div>
   <script src="script.js"></script>
 </body>
 </html>
