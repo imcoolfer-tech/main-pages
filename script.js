@@ -79,6 +79,7 @@ cancelTaskBtn.addEventListener("click", () => {
 });
 
 saveTaskBtn.addEventListener("click", () => {
+  console.log("Task input value:", `"${taskInput.value}"`);
   const title = taskInput.value.trim();
   if (title === "") return alert("Task title cannot be empty!");
 
