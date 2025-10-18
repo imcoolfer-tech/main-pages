@@ -31,14 +31,14 @@ body::before, body::after {
 }
 
 body::before {
-  background-image: url('img/blob1.jpg');
+  background-image: url('blob1.jpg');
   top: 80px;
   left: 50px;
   animation: float1 10s ease-in-out infinite;
 }
 
 body::after {
-  background-image: url('img/star1.jpg');
+  background-image: url('star1.jpg');
   bottom: 80px;
   right: 100px;
   animation: float2 12s ease-in-out infinite reverse;
