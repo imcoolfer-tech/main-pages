@@ -1,115 +1,98 @@
-// === SELECT ELEMENTS ===
 const newTaskBtn = document.querySelector(".new-task");
-const taskGrid = document.querySelector(".task-grid");
+const taskList = document.querySelector(".task-list");
+const taskTitleHeader = document.getElementById("taskTitleHeader");
+const taskDetails = document.getElementById("taskDetails");
+const modal = document.getElementById("modal");
+const saveTaskBtn = document.getElementById("saveTask");
+const cancelTaskBtn = document.getElementById("cancelTask");
+const taskInput = document.getElementById("taskInput");
 
-// buat modal tambah task sederhana
-const modal = document.createElement("div");
-modal.classList.add("modal");
-modal.innerHTML = `
-  <div class="modal-content">
-    <h3>New Task</h3>
-    <input type="text" id="taskTitle" placeholder="Task title..." />
-    <div class="modal-buttons">
-      <button id="saveTask">Save</button>
-      <button id="cancelTask">Cancel</button>
-    </div>
-  </div>
-`;
-document.body.appendChild(modal);
-
-// sembunyikan modal
-modal.style.display = "none";
-
-// === DATA TASKS ===
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let selectedTask = null;
 
-// === FUNCTIONS ===
-
-// render tampilan task
-function renderTasks() {
-  taskGrid.innerHTML = "";
-  if (tasks.length === 0) {
-    taskGrid.innerHTML = "<p style='color:#999'>No tasks yet.</p>";
-    return;
-  }
-
+// === RENDER TASK LIST ===
+function renderList() {
+  taskList.innerHTML = "";
   tasks.forEach((task, index) => {
-    const card = document.createElement("div");
-    card.className = "task-card";
-    if (task.completed) card.classList.add("completed");
+    const li = document.createElement("li");
+    li.textContent = task.title;
+    li.className = task.completed ? "completed" : "";
+    if (selectedTask === index) li.classList.add("active");
 
-    card.innerHTML = `
-      <div class="date">${task.date}</div>
-      <p>${task.title}</p>
-      <div class="tags">
-        <span class="team">Team</span>
-        <span class="important">Important</span>
-      </div>
-      <div class="actions">
-        <button class="done">✔</button>
-        <button class="delete">🗑️</button>
-      </div>
-    `;
-
-    // event tombol selesai
-    card.querySelector(".done").addEventListener("click", () => {
-      task.completed = !task.completed;
-      saveTasks();
-      renderTasks();
+    li.addEventListener("click", () => {
+      selectedTask = index;
+      renderList();
+      renderDetails();
     });
 
-    // event tombol hapus
-    card.querySelector(".delete").addEventListener("click", () => {
-      tasks.splice(index, 1);
-      saveTasks();
-      renderTasks();
-    });
-
-    taskGrid.appendChild(card);
+    taskList.appendChild(li);
   });
 }
 
-// simpan ke localStorage
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+// === RENDER DETAILS ===
+function renderDetails() {
+  if (selectedTask === null) {
+    taskTitleHeader.textContent = "Select a task";
+    taskDetails.innerHTML = "<p>Select a task from the list to view details here.</p>";
+    return;
+  }
+
+  const task = tasks[selectedTask];
+  taskTitleHeader.textContent = task.title;
+  taskDetails.innerHTML = `
+    <div class="task-meta">Created: ${task.date}</div>
+    <p>Status: ${task.completed ? "✅ Completed" : "🕓 In Progress"}</p>
+    <div class="task-actions">
+      <button id="toggleComplete">${task.completed ? "Mark Incomplete" : "Mark Complete"}</button>
+      <button id="deleteTask">Delete</button>
+    </div>
+  `;
+
+  document.getElementById("toggleComplete").addEventListener("click", () => {
+    task.completed = !task.completed;
+    save();
+  });
+
+  document.getElementById("deleteTask").addEventListener("click", () => {
+    tasks.splice(selectedTask, 1);
+    selectedTask = null;
+    save();
+  });
 }
 
-// buka modal tambah task
+// === SAVE TO LOCALSTORAGE ===
+function save() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+  renderList();
+  renderDetails();
+}
+
+// === ADD NEW TASK ===
 newTaskBtn.addEventListener("click", () => {
   modal.style.display = "flex";
-  document.getElementById("taskTitle").focus();
+  taskInput.value = "";
+  taskInput.focus();
 });
 
-// tombol cancel
-document.getElementById("cancelTask").addEventListener("click", () => {
+cancelTaskBtn.addEventListener("click", () => {
   modal.style.display = "none";
-  document.getElementById("taskTitle").value = "";
 });
 
-// tombol simpan task
-document.getElementById("saveTask").addEventListener("click", () => {
-  const title = document.getElementById("taskTitle").value.trim();
+saveTaskBtn.addEventListener("click", () => {
+  const title = taskInput.value.trim();
   if (title === "") return alert("Task title cannot be empty!");
 
   const newTask = {
     title,
-    date: new Date().toLocaleString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    date: new Date().toLocaleString(),
     completed: false,
   };
-
   tasks.unshift(newTask);
-  saveTasks();
-  renderTasks();
-
-  document.getElementById("taskTitle").value = "";
+  selectedTask = 0;
+  save();
   modal.style.display = "none";
 });
 
-// === INITIALIZE ===
-renderTasks();
+// Initial render
+renderList();
+renderDetails();
