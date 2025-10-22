@@ -6,12 +6,15 @@ const saveTaskBtn = document.getElementById("saveTask");
 const cancelTaskBtn = document.getElementById("cancelTask");
 const taskInput = document.getElementById("taskInput");
 const taskDescInput = document.getElementById("taskDescInput");
+const taskDeadline = document.getElementById("taskDeadline");
+const taskProgress = document.getElementById("taskProgress");
+const progressValue = document.getElementById("progressValue");
 const searchInput = document.getElementById("searchInput");
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let selectedTask = null;
 
-// === RENDER LIST DAN DETAIL ===
+// === RENDER LIST (Sidebar) ===
 function renderList(filtered = tasks) {
   taskList.innerHTML = "";
   filtered.forEach((task, index) => {
@@ -29,6 +32,7 @@ function renderList(filtered = tasks) {
   });
 }
 
+// === RENDER DETAILS (Bagian kanan) ===
 function renderDetails(filtered = tasks) {
   taskDetails.innerHTML = "";
   filtered.forEach((task, index) => {
@@ -39,6 +43,11 @@ function renderDetails(filtered = tasks) {
       <h4>${task.title}</h4>
       <div class="meta">Created: ${task.date}</div>
       <p class="desc">${task.description || "<i>No description</i>"}</p>
+      <p>Deadline: ${task.deadline || "<i>No deadline</i>"}</p>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${task.progress || 0}%"></div>
+      </div>
+      <p>Progress: ${task.progress || 0}%</p>
       <p>Status: ${task.completed ? "✅ Completed" : "🕓 In Progress"}</p>
       <button class="toggle">${task.completed ? "Mark Incomplete" : "Mark Complete"}</button>
       <button class="delete">Delete</button>
@@ -58,17 +67,21 @@ function renderDetails(filtered = tasks) {
   });
 }
 
+// === SAVE KE LOCAL STORAGE ===
 function save() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
   renderList();
   renderDetails();
 }
 
-// === TASK MODAL ===
+// === MODAL HANDLING ===
 newTaskBtn.addEventListener("click", () => {
   modal.style.display = "flex";
   taskInput.value = "";
   taskDescInput.value = "";
+  taskDeadline.value = "";
+  taskProgress.value = 0;
+  progressValue.textContent = "0%";
   taskInput.focus();
 });
 
@@ -76,15 +89,25 @@ cancelTaskBtn.addEventListener("click", () => {
   modal.style.display = "none";
 });
 
+// === PROGRESS SLIDER UPDATE ===
+taskProgress.addEventListener("input", () => {
+  progressValue.textContent = `${taskProgress.value}%`;
+});
+
+// === SAVE TASK BARU ===
 saveTaskBtn.addEventListener("click", () => {
   const title = taskInput.value.trim();
   const description = taskDescInput.value.trim();
+  const deadline = taskDeadline.value;
+  const progress = parseInt(taskProgress.value);
 
   if (title === "") return alert("Task title cannot be empty!");
 
   const newTask = {
     title,
     description,
+    deadline,
+    progress,
     date: new Date().toLocaleString(),
     completed: false,
   };
@@ -94,6 +117,7 @@ saveTaskBtn.addEventListener("click", () => {
   modal.style.display = "none";
 });
 
+// === SEARCH TASK ===
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.toLowerCase();
   const filtered = tasks.filter((task) => task.title.toLowerCase().includes(query));
@@ -195,6 +219,23 @@ bgUpload.addEventListener("change", (e) => {
   };
   reader.readAsDataURL(file);
 });
+
+// === QUOTES ===
+const quotes = [
+  "Small steps every day lead to big results.",
+  "Focus on progress, not perfection.",
+  "Discipline beats motivation.",
+  "You don’t have to be great to start, but you have to start to be great.",
+  "Done is better than perfect."
+];
+
+function showRandomQuote() {
+  const quoteBox = document.getElementById("quoteBox");
+  const random = quotes[Math.floor(Math.random() * quotes.length)];
+  quoteBox.textContent = `"${random}"`;
+}
+
+showRandomQuote();
 
 // === INITIAL RENDER ===
 renderList();
