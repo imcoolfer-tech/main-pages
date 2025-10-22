@@ -238,7 +238,7 @@ header h3 {
   padding: 10px 0 ;
   border-radius: 8px;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.45);
   color: #2a9d8f;
   font-weight: bold;
   cursor: pointer;
