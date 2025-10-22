@@ -277,3 +277,11 @@ header h3 {
 .bg-preview-container.active img {
   display: block;
 }
+.bg-preview-overlay {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
