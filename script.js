@@ -11,7 +11,7 @@ const searchInput = document.getElementById("searchInput");
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let selectedTask = null;
 
-// === RENDER TASKS IN SIDEBAR ===
+// === RENDER LIST DAN DETAIL ===
 function renderList(filtered = tasks) {
   taskList.innerHTML = "";
   filtered.forEach((task, index) => {
@@ -29,7 +29,6 @@ function renderList(filtered = tasks) {
   });
 }
 
-// === RENDER TASK DETAILS ===
 function renderDetails(filtered = tasks) {
   taskDetails.innerHTML = "";
   filtered.forEach((task, index) => {
@@ -59,14 +58,13 @@ function renderDetails(filtered = tasks) {
   });
 }
 
-// === SAVE TO LOCAL STORAGE ===
 function save() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
   renderList();
   renderDetails();
 }
 
-// === ADD NEW TASK ===
+// === TASK MODAL ===
 newTaskBtn.addEventListener("click", () => {
   modal.style.display = "flex";
   taskInput.value = "";
@@ -96,7 +94,6 @@ saveTaskBtn.addEventListener("click", () => {
   modal.style.display = "none";
 });
 
-// === SEARCH FUNCTION ===
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.toLowerCase();
   const filtered = tasks.filter((task) => task.title.toLowerCase().includes(query));
@@ -106,8 +103,6 @@ searchInput.addEventListener("input", () => {
 
 // === BACKGROUND HANDLING ===
 const bgSelector = document.getElementById("bgSelector");
-const bgPreview = document.getElementById("bgPreview");
-const bgPreviewContainer = document.getElementById("bgPreviewContainer");
 const bgUpload = document.getElementById("bgUpload");
 
 const backgrounds = {
@@ -118,41 +113,65 @@ const backgrounds = {
   abstract: "url('abstract.jpg') center/cover no-repeat",
 };
 
-// === APPLY SAVED BACKGROUND ON LOAD ===
+// === LOAD SAVED BACKGROUND ===
 const savedBg = localStorage.getItem("background");
 const savedCustomBg = localStorage.getItem("customBg");
 
 if (savedCustomBg) {
   document.body.style.background = `url(${savedCustomBg}) center/cover no-repeat`;
   bgSelector.value = "custom";
-  updatePreview(savedCustomBg);
 } else if (savedBg && backgrounds[savedBg]) {
   document.body.style.background = backgrounds[savedBg];
   bgSelector.value = savedBg;
-  updatePreviewFromKey(savedBg);
 } else {
   document.body.style.background = backgrounds.default;
-  updatePreviewFromKey("default");
 }
 
-// === PREVIEW FUNCTION ===
-function updatePreviewFromKey(key) {
-  const urlMatch = backgrounds[key].match(/url\('(.*)'\)/);
-  if (urlMatch) {
-    bgPreview.src = urlMatch[1];
-    bgPreviewContainer.classList.add("active");
-  } else {
-    bgPreview.src = "";
-    bgPreviewContainer.classList.remove("active");
-  }
+// === PREVIEW OVERLAY ===
+function createPreviewOverlay(bgStyle, src = null, isCustom = false) {
+  const overlay = document.createElement("div");
+  overlay.className = "bg-preview-overlay";
+  overlay.style.position = "fixed";
+  overlay.style.top = 0;
+  overlay.style.left = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = isCustom ? `url(${src}) center/cover no-repeat` : bgStyle;
+  overlay.style.zIndex = "9999";
+  overlay.style.display = "flex";
+  overlay.style.flexDirection = "column";
+  overlay.style.justifyContent = "center";
+  overlay.style.alignItems = "center";
+  overlay.style.color = "#fff";
+  overlay.style.backdropFilter = "blur(2px)";
+  overlay.innerHTML = `
+    <div style="background:rgba(0,0,0,0.5);padding:20px 40px;border-radius:20px;text-align:center;">
+      <h2>Preview Background</h2>
+      <p>Do you want to apply this background?</p>
+      <button id="confirmBg" style="margin:10px;padding:10px 20px;border:none;border-radius:8px;background:#2a9d8f;color:white;">Confirm</button>
+      <button id="cancelBg" style="margin:10px;padding:10px 20px;border:none;border-radius:8px;background:#e76f51;color:white;">Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  overlay.querySelector("#confirmBg").addEventListener("click", () => {
+    if (isCustom) {
+      localStorage.setItem("customBg", src);
+      localStorage.setItem("background", "custom");
+      document.body.style.background = `url(${src}) center/cover no-repeat`;
+    } else {
+      localStorage.setItem("background", bgSelector.value);
+      localStorage.removeItem("customBg");
+      document.body.style.background = bgStyle;
+    }
+    overlay.remove();
+  });
+
+  overlay.querySelector("#cancelBg").addEventListener("click", () => overlay.remove());
 }
 
-function updatePreview(src) {
-  bgPreview.src = src;
-  bgPreviewContainer.classList.add("active");
-}
-
-// === HANDLE SELECTION CHANGE ===
+// === HANDLE DROPDOWN CHANGE ===
 bgSelector.addEventListener("change", () => {
   const selected = bgSelector.value;
 
@@ -161,10 +180,7 @@ bgSelector.addEventListener("change", () => {
     return;
   }
 
-  localStorage.removeItem("customBg");
-  document.body.style.background = backgrounds[selected];
-  localStorage.setItem("background", selected);
-  updatePreviewFromKey(selected);
+  createPreviewOverlay(backgrounds[selected]);
 });
 
 // === HANDLE CUSTOM UPLOAD ===
@@ -175,10 +191,7 @@ bgUpload.addEventListener("change", (e) => {
   const reader = new FileReader();
   reader.onload = (event) => {
     const imageSrc = event.target.result;
-    document.body.style.background = `url(${imageSrc}) center/cover no-repeat`;
-    localStorage.setItem("customBg", imageSrc);
-    localStorage.setItem("background", "custom");
-    updatePreview(imageSrc);
+    createPreviewOverlay(null, imageSrc, true);
   };
   reader.readAsDataURL(file);
 });
