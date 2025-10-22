@@ -1,3 +1,4 @@
+// === ELEMENTS ===
 const newTaskBtn = document.querySelector(".new-task");
 const taskList = document.querySelector(".task-list");
 const taskDetails = document.getElementById("taskDetails");
@@ -10,9 +11,66 @@ const taskDeadline = document.getElementById("taskDeadline");
 const taskProgress = document.getElementById("taskProgress");
 const progressValue = document.getElementById("progressValue");
 const searchInput = document.getElementById("searchInput");
+const quoteBox = document.getElementById("quoteBox");
+
+// === GLOBAL PROGRESS BAR ===
+const globalProgressBar = document.createElement("div");
+globalProgressBar.className = "global-progress";
+globalProgressBar.innerHTML = `
+  <div class="progress-bar">
+    <div class="progress-fill" id="globalProgressFill" style="width:0%"></div>
+  </div>
+  <p id="globalProgressText">Total Progress: 0%</p>
+`;
+document.body.prepend(globalProgressBar);
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let selectedTask = null;
+
+// === TOAST NOTIFICATION ===
+function showToast(message, type = "info") {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.classList.add("show"), 100);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 500);
+  }, 4000);
+}
+
+// === UPDATE GLOBAL PROGRESS ===
+function updateGlobalProgress() {
+  if (tasks.length === 0) {
+    document.getElementById("globalProgressFill").style.width = "0%";
+    document.getElementById("globalProgressText").textContent = "Total Progress: 0%";
+    return;
+  }
+
+  const completed = tasks.filter(t => t.completed).length;
+  const totalProgress = Math.round((completed / tasks.length) * 100);
+  document.getElementById("globalProgressFill").style.width = `${totalProgress}%`;
+  document.getElementById("globalProgressText").textContent = `Total Progress: ${totalProgress}%`;
+}
+
+// === CHECK DEADLINES ===
+function checkDeadlines() {
+  const now = new Date();
+  tasks.forEach(task => {
+    if (task.deadline && !task.completed) {
+      const timeLeft = new Date(task.deadline) - now;
+      const hoursLeft = timeLeft / (1000 * 60 * 60);
+
+      if (hoursLeft < 24 && hoursLeft > 0) {
+        showToast(`⚠️ Deadline for "${task.title}" is less than 24 hours away!`, "warning");
+      } else if (hoursLeft <= 0) {
+        showToast(`⏰ Deadline missed for "${task.title}"!`, "danger");
+      }
+    }
+  });
+}
 
 // === RENDER LIST (Sidebar) ===
 function renderList(filtered = tasks) {
@@ -32,7 +90,7 @@ function renderList(filtered = tasks) {
   });
 }
 
-// === RENDER DETAILS (Bagian kanan) ===
+// === RENDER DETAILS ===
 function renderDetails(filtered = tasks) {
   taskDetails.innerHTML = "";
   filtered.forEach((task, index) => {
@@ -45,21 +103,25 @@ function renderDetails(filtered = tasks) {
       <p class="desc">${task.description || "<i>No description</i>"}</p>
       <p>Deadline: ${task.deadline || "<i>No deadline</i>"}</p>
       <div class="progress-bar">
-        <div class="progress-fill" style="width:${task.progress || 0}%"></div>
+        <div class="progress-fill" style="width:${task.completed ? 100 : task.progress || 0}%"></div>
       </div>
-      <p>Progress: ${task.progress || 0}%</p>
+      <p>Progress: ${task.completed ? 100 : task.progress || 0}%</p>
       <p>Status: ${task.completed ? "✅ Completed" : "🕓 In Progress"}</p>
       <button class="toggle">${task.completed ? "Mark Incomplete" : "Mark Complete"}</button>
       <button class="delete">Delete</button>
     `;
 
+    // === EVENT: Toggle complete ===
     div.querySelector(".toggle").addEventListener("click", () => {
       task.completed = !task.completed;
+      if (task.completed) showToast(`🎉 Task "${task.title}" completed!`, "success");
       save();
     });
 
+    // === EVENT: Delete ===
     div.querySelector(".delete").addEventListener("click", () => {
       tasks.splice(index, 1);
+      showToast(`🗑️ Task "${task.title}" deleted.`, "info");
       save();
     });
 
@@ -72,6 +134,7 @@ function save() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
   renderList();
   renderDetails();
+  updateGlobalProgress();
 }
 
 // === MODAL HANDLING ===
@@ -155,19 +218,12 @@ if (savedCustomBg) {
 function createPreviewOverlay(bgStyle, src = null, isCustom = false) {
   const overlay = document.createElement("div");
   overlay.className = "bg-preview-overlay";
-  overlay.style.position = "fixed";
-  overlay.style.top = 0;
-  overlay.style.left = 0;
-  overlay.style.width = "100%";
-  overlay.style.height = "100%";
-  overlay.style.background = isCustom ? `url(${src}) center/cover no-repeat` : bgStyle;
-  overlay.style.zIndex = "9999";
-  overlay.style.display = "flex";
-  overlay.style.flexDirection = "column";
-  overlay.style.justifyContent = "center";
-  overlay.style.alignItems = "center";
-  overlay.style.color = "#fff";
-  overlay.style.backdropFilter = "blur(2px)";
+  overlay.style = `
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:${isCustom ? `url(${src}) center/cover no-repeat` : bgStyle};
+    z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;
+    backdrop-filter:blur(2px);
+  `;
   overlay.innerHTML = `
     <div style="background:rgba(0,0,0,0.5);padding:20px 40px;border-radius:20px;text-align:center;">
       <h2>Preview Background</h2>
@@ -176,7 +232,6 @@ function createPreviewOverlay(bgStyle, src = null, isCustom = false) {
       <button id="cancelBg" style="margin:10px;padding:10px 20px;border:none;border-radius:8px;background:#e76f51;color:white;">Cancel</button>
     </div>
   `;
-
   document.body.appendChild(overlay);
 
   overlay.querySelector("#confirmBg").addEventListener("click", () => {
@@ -198,12 +253,10 @@ function createPreviewOverlay(bgStyle, src = null, isCustom = false) {
 // === HANDLE DROPDOWN CHANGE ===
 bgSelector.addEventListener("change", () => {
   const selected = bgSelector.value;
-
   if (selected === "custom") {
     bgUpload.click();
     return;
   }
-
   createPreviewOverlay(backgrounds[selected]);
 });
 
@@ -230,13 +283,14 @@ const quotes = [
 ];
 
 function showRandomQuote() {
-  const quoteBox = document.getElementById("quoteBox");
   const random = quotes[Math.floor(Math.random() * quotes.length)];
   quoteBox.textContent = `"${random}"`;
 }
-
 showRandomQuote();
 
-// === INITIAL RENDER ===
+// === INITIALIZE ===
 renderList();
 renderDetails();
+updateGlobalProgress();
+checkDeadlines();
+setInterval(checkDeadlines, 60000); // cek setiap menit
