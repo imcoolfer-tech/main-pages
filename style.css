@@ -100,13 +100,23 @@ body::after {
   background-color: #21867a;
 }
 
+/* === FIX: hilangkan area kosong saat tidak ada task === */
 .task-list {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
+  height: auto;              /* ubah dari fixed height ke otomatis */
+  min-height: 0;             /* biar gak nambah ruang kosong */
+  padding: 0;                /* kalau mau lebih rapat */
+  margin: 0;                 /* hilangkan margin bawah ekstra */
 }
+
+.task-list:empty {
+  display: none;             /* sembunyikan saat tidak ada task */
+}
+
 
 .task-list li {
   padding: 10px;
