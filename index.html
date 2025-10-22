@@ -13,9 +13,13 @@
       <button class="new-task">+ New Task</button>
       <input type="text" id="searchInput" placeholder="Search tasks..." />
       <ul class="task-list"></ul>
-
-      <!-- Tombol Ganti Background -->
-      <button class="change-bg">🎨 Change Background</button>
+      <select id="bgSelector">
+  <option value="default">🌈 Default</option>
+  <option value="galaxy">🌌 Galaxy</option>
+  <option value="forest">🌲 Forest</option>
+  <option value="ocean">🌊 Ocean</option>
+  <option value="abstract">🎨 Abstract</option>
+</select>
     </aside>
 
     <main class="main">
@@ -26,7 +30,7 @@
     </main>
   </div>
 
-  <!-- Modal Tambah Task -->
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
       <h3>New Task</h3>
@@ -36,36 +40,6 @@
         <button id="saveTask">Save</button>
         <button id="cancelTask">Cancel</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Modal Pilih Background -->
-  <div class="modal" id="bgModal">
-    <div class="bg-modal-content">
-      <h3>Select Background</h3>
-      <table class="bg-table">
-        <tr data-bg="default">
-          <td><div class="preview" style="background: linear-gradient(135deg, #101820, #2a9d8f, #e9c46a);"></div></td>
-          <td>Default</td>
-        </tr>
-        <tr data-bg="galaxy">
-          <td><div class="preview" style="background-image: url('galaxy.jpg'); background-size: cover;"></div></td>
-          <td>Galaxy</td>
-        </tr>
-        <tr data-bg="forest">
-          <td><div class="preview" style="background-image: url('forest.jpg'); background-size: cover;"></div></td>
-          <td>Forest</td>
-        </tr>
-        <tr data-bg="ocean">
-          <td><div class="preview" style="background-image: url('ocean.jpg'); background-size: cover;"></div></td>
-          <td>Ocean</td>
-        </tr>
-        <tr data-bg="abstract">
-          <td><div class="preview" style="background-image: url('abstract.jpg'); background-size: cover;"></div></td>
-          <td>Abstract</td>
-        </tr>
-      </table>
-      <button id="closeBgModal">Close</button>
     </div>
   </div>
 
