@@ -104,6 +104,31 @@ searchInput.addEventListener("input", () => {
   renderDetails(filtered);
 });
 
+const bgSelector = document.getElementById("bgSelector");
+
+const backgrounds = {
+  default: "linear-gradient(135deg, #101820, #2a9d8f, #e9c46a)",
+  galaxy: "url('galaxy.jpg') center/cover no-repeat",
+  forest: "url('forest.jpg') center/cover no-repeat",
+  ocean: "url('ocean.jpg') center/cover no-repeat",
+  abstract: "url('abstract.jpg') center/cover no-repeat",
+};
+
+// === Apply saved background on load ===
+const savedBg = localStorage.getItem("background");
+if (savedBg && backgrounds[savedBg]) {
+  document.body.style.background = backgrounds[savedBg];
+  bgSelector.value = savedBg;
+}
+
+// === Change background dynamically ===
+bgSelector.addEventListener("change", () => {
+  const selected = bgSelector.value;
+  document.body.style.background = backgrounds[selected];
+  localStorage.setItem("background", selected);
+});
+
+
 // Initial render
 renderList();
 renderDetails();
