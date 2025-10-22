@@ -239,7 +239,7 @@ header h3 {
   border-radius: 8px;
   border: none;
   background: rgba(0, 0, 0, 0.45);
-  color: #2a9d8f;
+  backdrop-filter: blur(20px);
   font-weight: bold;
   cursor: pointer;
   outline: none;
