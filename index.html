@@ -33,6 +33,13 @@
     </aside>
 
     <main class="main">
+      <main class="main">
+  <div id="quoteBox" class="quote-box"></div>
+  <header>
+    <h3 id="taskTitleHeader">All Tasks</h3>
+  </header>
+  <div id="taskDetails" class="task-details"></div>
+</main>
       <header>
         <h3 id="taskTitleHeader">All Tasks</h3>
       </header>
@@ -43,6 +50,9 @@
   <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
+      <input type="date" id="taskDeadline" />
+<input type="range" id="taskProgress" min="0" max="100" value="0" />
+<label for="taskProgress">Progress: <span id="progressValue">0%</span></label>
       <h3>New Task</h3>
       <input type="text" id="taskInput" placeholder="Enter task title..." />
       <textarea id="taskDescInput" placeholder="Enter task description..."></textarea>
