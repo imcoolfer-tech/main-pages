@@ -29,7 +29,7 @@ function renderList(filtered = tasks) {
   });
 }
 
-// === RENDER TASKS STACKED IN MAIN ===
+// === RENDER TASK DETAILS ===
 function renderDetails(filtered = tasks) {
   taskDetails.innerHTML = "";
   filtered.forEach((task, index) => {
@@ -59,7 +59,7 @@ function renderDetails(filtered = tasks) {
   });
 }
 
-// === SAVE TO LOCALSTORAGE ===
+// === SAVE TO LOCAL STORAGE ===
 function save() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
   renderList();
@@ -104,9 +104,10 @@ searchInput.addEventListener("input", () => {
   renderDetails(filtered);
 });
 
+// === BACKGROUND HANDLING ===
 const bgSelector = document.getElementById("bgSelector");
-const bgPreviewContainer = document.getElementById("bgPreviewContainer");
 const bgPreview = document.getElementById("bgPreview");
+const bgPreviewContainer = document.getElementById("bgPreviewContainer");
 const bgUpload = document.getElementById("bgUpload");
 
 const backgrounds = {
@@ -117,90 +118,71 @@ const backgrounds = {
   abstract: "url('abstract.jpg') center/cover no-repeat",
 };
 
-// === Fungsi untuk update preview ===
-function updatePreview(value) {
-  if (value === "custom") {
-    // Buka file picker
-    bgUpload.click();
-  } else if (backgrounds[value].startsWith("url(")) {
-    const imgUrl = backgrounds[value].match(/url\('(.*?)'\)/)[1];
-    bgPreview.src = imgUrl;
+// === APPLY SAVED BACKGROUND ON LOAD ===
+const savedBg = localStorage.getItem("background");
+const savedCustomBg = localStorage.getItem("customBg");
+
+if (savedCustomBg) {
+  document.body.style.background = `url(${savedCustomBg}) center/cover no-repeat`;
+  bgSelector.value = "custom";
+  updatePreview(savedCustomBg);
+} else if (savedBg && backgrounds[savedBg]) {
+  document.body.style.background = backgrounds[savedBg];
+  bgSelector.value = savedBg;
+  updatePreviewFromKey(savedBg);
+} else {
+  document.body.style.background = backgrounds.default;
+  updatePreviewFromKey("default");
+}
+
+// === PREVIEW FUNCTION ===
+function updatePreviewFromKey(key) {
+  const urlMatch = backgrounds[key].match(/url\('(.*)'\)/);
+  if (urlMatch) {
+    bgPreview.src = urlMatch[1];
     bgPreviewContainer.classList.add("active");
   } else {
-    // untuk background gradient
+    bgPreview.src = "";
     bgPreviewContainer.classList.remove("active");
   }
 }
 
-// === Apply saved background on load ===
-const savedBg = localStorage.getItem("background");
-const savedCustom = localStorage.getItem("customBackground");
-if (savedBg) {
-  if (savedBg === "custom" && savedCustom) {
-    document.body.style.background = `url('${savedCustom}') center/cover no-repeat`;
-    bgPreview.src = savedCustom;
-    bgPreviewContainer.classList.add("active");
-    bgSelector.value = "custom";
-  } else if (backgrounds[savedBg]) {
-    document.body.style.background = backgrounds[savedBg];
-    bgSelector.value = savedBg;
-    updatePreview(savedBg);
-  }
+function updatePreview(src) {
+  bgPreview.src = src;
+  bgPreviewContainer.classList.add("active");
 }
 
-// === Change background dynamically ===
+// === HANDLE SELECTION CHANGE ===
 bgSelector.addEventListener("change", () => {
   const selected = bgSelector.value;
+
   if (selected === "custom") {
-    updatePreview("custom");
+    bgUpload.click();
     return;
   }
 
+  localStorage.removeItem("customBg");
   document.body.style.background = backgrounds[selected];
   localStorage.setItem("background", selected);
-  updatePreview(selected);
+  updatePreviewFromKey(selected);
 });
 
-// === Upload custom background ===
+// === HANDLE CUSTOM UPLOAD ===
 bgUpload.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
+
   const reader = new FileReader();
-  reader.onload = function (event) {
-    const imageUrl = event.target.result;
-    document.body.style.background = `url('${imageUrl}') center/cover no-repeat`;
-    bgPreview.src = imageUrl;
-    bgPreviewContainer.classList.add("active");
+  reader.onload = (event) => {
+    const imageSrc = event.target.result;
+    document.body.style.background = `url(${imageSrc}) center/cover no-repeat`;
+    localStorage.setItem("customBg", imageSrc);
     localStorage.setItem("background", "custom");
-    localStorage.setItem("customBackground", imageUrl);
+    updatePreview(imageSrc);
   };
   reader.readAsDataURL(file);
 });
 
-
-const backgrounds = {
-  default: "linear-gradient(135deg, #101820, #2a9d8f, #e9c46a)",
-  galaxy: "url('galaxy.jpg') center/cover no-repeat",
-  forest: "url('forest.jpg') center/cover no-repeat",
-  ocean: "url('ocean.jpg') center/cover no-repeat",
-  abstract: "url('abstract.jpg') center/cover no-repeat",
-};
-
-// === Apply saved background on load ===
-const savedBg = localStorage.getItem("background");
-if (savedBg && backgrounds[savedBg]) {
-  document.body.style.background = backgrounds[savedBg];
-  bgSelector.value = savedBg;
-}
-
-// === Change background dynamically ===
-bgSelector.addEventListener("change", () => {
-  const selected = bgSelector.value;
-  document.body.style.background = backgrounds[selected];
-  localStorage.setItem("background", selected);
-});
-
-
-// Initial render
+// === INITIAL RENDER ===
 renderList();
 renderDetails();
