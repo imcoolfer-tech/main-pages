@@ -105,6 +105,78 @@ searchInput.addEventListener("input", () => {
 });
 
 const bgSelector = document.getElementById("bgSelector");
+const bgPreviewContainer = document.getElementById("bgPreviewContainer");
+const bgPreview = document.getElementById("bgPreview");
+const bgUpload = document.getElementById("bgUpload");
+
+const backgrounds = {
+  default: "linear-gradient(135deg, #101820, #2a9d8f, #e9c46a)",
+  galaxy: "url('galaxy.jpg') center/cover no-repeat",
+  forest: "url('forest.jpg') center/cover no-repeat",
+  ocean: "url('ocean.jpg') center/cover no-repeat",
+  abstract: "url('abstract.jpg') center/cover no-repeat",
+};
+
+// === Fungsi untuk update preview ===
+function updatePreview(value) {
+  if (value === "custom") {
+    // Buka file picker
+    bgUpload.click();
+  } else if (backgrounds[value].startsWith("url(")) {
+    const imgUrl = backgrounds[value].match(/url\('(.*?)'\)/)[1];
+    bgPreview.src = imgUrl;
+    bgPreviewContainer.classList.add("active");
+  } else {
+    // untuk background gradient
+    bgPreviewContainer.classList.remove("active");
+  }
+}
+
+// === Apply saved background on load ===
+const savedBg = localStorage.getItem("background");
+const savedCustom = localStorage.getItem("customBackground");
+if (savedBg) {
+  if (savedBg === "custom" && savedCustom) {
+    document.body.style.background = `url('${savedCustom}') center/cover no-repeat`;
+    bgPreview.src = savedCustom;
+    bgPreviewContainer.classList.add("active");
+    bgSelector.value = "custom";
+  } else if (backgrounds[savedBg]) {
+    document.body.style.background = backgrounds[savedBg];
+    bgSelector.value = savedBg;
+    updatePreview(savedBg);
+  }
+}
+
+// === Change background dynamically ===
+bgSelector.addEventListener("change", () => {
+  const selected = bgSelector.value;
+  if (selected === "custom") {
+    updatePreview("custom");
+    return;
+  }
+
+  document.body.style.background = backgrounds[selected];
+  localStorage.setItem("background", selected);
+  updatePreview(selected);
+});
+
+// === Upload custom background ===
+bgUpload.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    const imageUrl = event.target.result;
+    document.body.style.background = `url('${imageUrl}') center/cover no-repeat`;
+    bgPreview.src = imageUrl;
+    bgPreviewContainer.classList.add("active");
+    localStorage.setItem("background", "custom");
+    localStorage.setItem("customBackground", imageUrl);
+  };
+  reader.readAsDataURL(file);
+});
+
 
 const backgrounds = {
   default: "linear-gradient(135deg, #101820, #2a9d8f, #e9c46a)",
