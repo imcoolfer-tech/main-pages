@@ -134,3 +134,43 @@ renderList();
 renderDetails();
 
 
+const bgModal = document.getElementById("bgModal");
+const changeBgBtn = document.querySelector(".change-bg");
+const closeBgModal = document.getElementById("closeBgModal");
+const bgRows = document.querySelectorAll(".bg-table tr");
+
+const backgrounds = {
+  default: "linear-gradient(135deg, #101820, #2a9d8f, #e9c46a)",
+  galaxy: "url('galaxy.jpg') center/cover no-repeat",
+  forest: "url('forest.jpg') center/cover no-repeat",
+  ocean: "url('ocean.jpg') center/cover no-repeat",
+  abstract: "url('abstract.jpg') center/cover no-repeat",
+};
+
+// === buka modal ===
+changeBgBtn.addEventListener("click", () => {
+  bgModal.style.display = "flex";
+});
+
+// === tutup modal ===
+closeBgModal.addEventListener("click", () => {
+  bgModal.style.display = "none";
+});
+
+// === pilih background ===
+bgRows.forEach((row) => {
+  row.addEventListener("click", () => {
+    const bgType = row.getAttribute("data-bg");
+    document.body.style.background = backgrounds[bgType];
+    localStorage.setItem("background", bgType);
+    bgModal.style.display = "none";
+  });
+});
+
+// === apply saved background saat load ===
+const savedBg = localStorage.getItem("background");
+if (savedBg && backgrounds[savedBg]) {
+  document.body.style.background = backgrounds[savedBg];
+}
+
+
